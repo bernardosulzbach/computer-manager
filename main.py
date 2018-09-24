@@ -1,3 +1,5 @@
+import subprocess
+
 PACKAGES_FILE = 'packages.txt'
 CURRENT_JETBRAINS_VERSION = "2018.2.4"
 
@@ -16,6 +18,7 @@ def install_operating_system_packages():
         packages = [line.strip() for line in packages_file.readlines()]
     command = 'sudo zypper in' + ' ' + ' '.join(packages)
     print(command)
+    subprocess.call(command.split())
 
 
 def main():

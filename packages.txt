@@ -2,4 +2,5 @@ clang
 cmake
 cppcheck
 gcc
+gcc-c++
 git
