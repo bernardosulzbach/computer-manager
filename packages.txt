@@ -6,5 +6,8 @@ gcc-c++
 gdb
 git
 keepassx
+nmap
+opencv
+opencv-devel
 shellcheck
 spek
