@@ -3,4 +3,7 @@ cmake
 cppcheck
 gcc
 gcc-c++
+gdb
 git
+keepassx
+spek
