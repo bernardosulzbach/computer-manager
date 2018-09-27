@@ -6,4 +6,5 @@ gcc-c++
 gdb
 git
 keepassx
+shellcheck
 spek
