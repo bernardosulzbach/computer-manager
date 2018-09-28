@@ -1,6 +1,10 @@
 clang
 cmake
 cppcheck
+octave
+libboost_system1_68_0-devel
+libboost_headers1_68_0-devel
+libboost_filesystem1_68_0-devel
 gcc
 gcc-c++
 gdb
