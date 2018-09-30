@@ -7,6 +7,7 @@ gcc
 gcc-c++
 gdb
 git
+imagewriter
 keepassx
 libboost_filesystem1_68_0-devel
 libboost_headers1_68_0-devel
