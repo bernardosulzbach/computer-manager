@@ -1,3 +1,4 @@
+ShellCheck
 clang
 cmake
 cppcheck
@@ -10,11 +11,11 @@ keepassx
 libboost_filesystem1_68_0-devel
 libboost_headers1_68_0-devel
 libboost_system1_68_0-devel
+libcurl-devel
 nmap
 octave
 opencv
 opencv-devel
 python3
 python3-pip
-ShellCheck
 spek
