@@ -1,3 +1,3 @@
-# Housekeeper
+# Daughter
 
-An attempt to automate workstation management
+Daughter is a workstation management personal assistant.
