@@ -18,11 +18,15 @@ PACKAGES_FILENAME = 'packages.txt'
 
 CURRENT_JETBRAINS_VERSION = "2018.2.4"
 
-IDEA_LINK = "https://download.jetbrains.com/idea/ideaIU-{}.tar.gz"
-CLION_LINK = "https://download.jetbrains.com/cpp/CLion-{}.tar.gz"
-PYCHARM_LINK = "https://download.jetbrains.com/python/pycharm-professional-{}.tar.gz"
-DATAGRIP_LINK = "https://download.jetbrains.com/datagrip/datagrip-{}.tar.gz"
-JETBRAINS_LINKS = [IDEA_LINK, CLION_LINK, PYCHARM_LINK, DATAGRIP_LINK]
+IDEA_LINK_FORMAT = "https://download.jetbrains.com/idea/ideaIU-{}.tar.gz"
+CLION_LINK_FORMAT = "https://download.jetbrains.com/cpp/CLion-{}.tar.gz"
+PYCHARM_LINK_FORMAT = "https://download.jetbrains.com/python/pycharm-professional-{}.tar.gz"
+DATAGRIP_LINK_FORMAT = "https://download.jetbrains.com/datagrip/datagrip-{}.tar.gz"
+
+JETBRAINS_CHECKSUM_SUFFIX = '.sha256'
+
+JETBRAINS_FORMATS = [IDEA_LINK_FORMAT, CLION_LINK_FORMAT, PYCHARM_LINK_FORMAT, DATAGRIP_LINK_FORMAT]
+JETBRAINS_LINKS = [link.format(CURRENT_JETBRAINS_VERSION) for link in JETBRAINS_FORMATS]
 
 
 class Sentence:
@@ -92,9 +96,28 @@ def download(link, filename):
             fd.write(chunk)
 
 
-def install_jetbrains_products():
-    for link in JETBRAINS_LINKS:
-        download(link, os.path.join(DOWNLOAD_DIRECTORY, os.path.basename(link)))
+def get_daughter_directory():
+    return os.path.dirname(sys.argv[0])
+
+
+def download_jetbrains_products(sentence: Sentence):
+    for file_link in JETBRAINS_LINKS:
+        with change_directory(os.path.join(get_daughter_directory(), DOWNLOAD_DIRECTORY)):
+            print('Downloading {}...'.format(os.path.basename(file_link)), end='', flush=True)
+            file_checksum_link = file_link + JETBRAINS_CHECKSUM_SUFFIX
+            file_checksum_name = os.path.basename(file_checksum_link)
+            download(file_checksum_link, file_checksum_name)
+            # Try the checksum, if it fails, download the file.
+            try:
+                checksum_output = subprocess.check_output('sha256sum -c {}'.format(file_checksum_name).split())
+                if checksum_output.decode('utf-8').strip().endswith('OK'):
+                    print(' already downloaded.')
+                    continue
+            except subprocess.CalledProcessError:
+                pass
+            file_name = os.path.basename(file_link)
+            download(file_link, file_name)
+            print(' done.')
 
 
 def list_repositories(sentece: Sentence):
@@ -170,6 +193,7 @@ def get_commands():
             Command('add package', add_package),
             Command('list packages', list_packages),
             Command('install packages', install_packages),
+            Command('download jetbrains products', download_jetbrains_products),
             ]
 
 
