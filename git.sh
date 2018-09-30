@@ -9,6 +9,8 @@ git config --global push.default simple
 
 # Better Git pager
 curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o "$SCRIPTS_PATH/diff-so-fancy"
+chmod +x "$SCRIPTS_PATH/diff-so-fancy"
+
 git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
 
 # Better Git colors
