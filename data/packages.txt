@@ -3,6 +3,7 @@ clang
 cmake
 cppcheck
 crawl
+demo
 dropbox
 gcc
 gcc-c++

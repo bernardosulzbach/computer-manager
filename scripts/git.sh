@@ -2,6 +2,8 @@
 
 SCRIPTS_PATH="$HOME/scripts"
 
+bash ensure-scripts-directory.sh
+
 git config --global user.email "bernardo@bernardosulzbach.com"
 git config --global user.name "Bernardo Sulzbach"
 

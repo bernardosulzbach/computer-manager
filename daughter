@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 
-from contextlib import contextmanager
+import contextlib
 import requests
 import subprocess
 import os
 import sys
 import string
+import shutil
 
 INDENTATION = '  '
 USER_HOME = os.path.expanduser('~')
@@ -14,7 +15,7 @@ DATA_DIRECTORY = 'data'
 DOWNLOAD_DIRECTORY = 'downloads'
 DOWNLOAD_CHUNK_SIZE = 256
 PIP_FILENAME = 'pip.txt'
-PACKAGES_FILENAME = 'packages.txt'
+PACKAGES_FILE_NAME = 'packages.txt'
 
 CURRENT_JETBRAINS_VERSION = "2018.2.4"
 
@@ -23,8 +24,9 @@ CLION_LINK_FORMAT = "https://download.jetbrains.com/cpp/CLion-{}.tar.gz"
 PYCHARM_LINK_FORMAT = "https://download.jetbrains.com/python/pycharm-professional-{}.tar.gz"
 DATAGRIP_LINK_FORMAT = "https://download.jetbrains.com/datagrip/datagrip-{}.tar.gz"
 
+SWAP_EXTENSION = '.swap'
 JETBRAINS_CHECKSUM_SUFFIX = '.sha256'
-
+JETBRAINS_INSTALL_DIRECTORY = 'jetbrains'
 JETBRAINS_FORMATS = [IDEA_LINK_FORMAT, CLION_LINK_FORMAT, PYCHARM_LINK_FORMAT, DATAGRIP_LINK_FORMAT]
 JETBRAINS_LINKS = [link.format(CURRENT_JETBRAINS_VERSION) for link in JETBRAINS_FORMATS]
 
@@ -61,18 +63,17 @@ class Command:
         return str(self.invocation)
 
 
-@contextmanager
+@contextlib.contextmanager
 def change_directory(new_directory):
     previous_directory = os.getcwd()
-    os.chdir(os.path.expanduser(new_directory))
+    new_directory = new_directory
+    if not os.path.exists(new_directory):
+        os.mkdir(new_directory)
+    os.chdir(new_directory)
     try:
         yield
     finally:
         os.chdir(previous_directory)
-
-
-def not_implemented(sentece: Sentence):
-    raise NotImplementedError()
 
 
 def assert_is_path_friendly(entry: str):
@@ -120,6 +121,16 @@ def download_jetbrains_products(sentence: Sentence):
             print(' done.')
 
 
+def install_jetbrains_products(sentence: Sentence):
+    download_jetbrains_products(sentence)
+    for file_link in JETBRAINS_LINKS:
+        file_name = os.path.basename(file_link)
+        with change_directory(os.path.join(get_daughter_directory(), JETBRAINS_INSTALL_DIRECTORY)):
+            subprocess.call('tar --extract --file {}'.format(
+                os.path.join(get_daughter_directory(), DOWNLOAD_DIRECTORY, file_name)).split())
+            print('Extracted {}.'.format(file_name))
+
+
 def list_repositories(sentece: Sentence):
     dirty = []
     clean = []
@@ -145,7 +156,7 @@ def list_repositories(sentece: Sentence):
 
 
 def install_operating_system_packages():
-    with open(get_path_to_housekeeper_data_file(PACKAGES_FILENAME)) as packages_file:
+    with open(get_path_to_housekeeper_data_file(PACKAGES_FILE_NAME)) as packages_file:
         packages = [line.strip() for line in packages_file.readlines()]
     command = 'sudo zypper in' + ' ' + ' '.join(packages)
     print(command)
@@ -164,15 +175,17 @@ def install_packages(sentence: Sentence):
 
 
 def get_package_list():
-    with open(get_path_to_housekeeper_data_file(PACKAGES_FILENAME)) as packages_file:
+    with open(get_path_to_housekeeper_data_file(PACKAGES_FILE_NAME)) as packages_file:
         packages = [line.strip() for line in packages_file.readlines()]
     return packages
 
 
 def set_package_list(package_list: [str]):
-    # TODO: use a temporary file.
-    with open(get_path_to_housekeeper_data_file(PACKAGES_FILENAME), 'w') as packages_file:
+    packages_swap_file_name = PACKAGES_FILE_NAME + SWAP_EXTENSION
+    packages_swap_file_path = get_path_to_housekeeper_data_file(packages_swap_file_name)
+    with open(packages_swap_file_path, 'w') as packages_file:
         print('\n'.join(package_list), file=packages_file)
+    shutil.move(packages_swap_file_path, get_path_to_housekeeper_data_file(PACKAGES_FILE_NAME))
 
 
 def add_package(sentence: Sentence):
@@ -194,7 +207,7 @@ def get_commands():
             Command('list packages', list_packages),
             Command('install packages', install_packages),
             Command('download jetbrains products', download_jetbrains_products),
-            ]
+            Command('install jetbrains products', install_jetbrains_products)]
 
 
 def print_commands(sentence: Sentence):
