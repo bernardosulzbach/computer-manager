@@ -21,4 +21,3 @@ opencv
 opencv-devel
 python3
 python3-pip
-spek
