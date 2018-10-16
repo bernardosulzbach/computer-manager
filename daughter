@@ -139,7 +139,11 @@ def list_repositories(sentece: Sentence):
         full_path = os.path.join(USER_CODE_DIRECTORY, basename)
         with change_directory(full_path):
             command = 'git status --short'
-            output = subprocess.check_output(command.split())
+            try:
+                output = subprocess.check_output(command.split())
+            except subprocess.CalledProcessError:
+                print('Failed when evaluating {}.'.format(basename))
+                return
         if output:
             dirty.append(basename)
         else:
