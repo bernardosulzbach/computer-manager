@@ -1,9 +1,9 @@
 ShellCheck
+aspell-pt_BR
 clang
 cmake
 cppcheck
 crawl
-demo
 dropbox
 gcc
 gcc-c++
@@ -21,4 +21,16 @@ octave
 opencv
 opencv-devel
 python3
+python3-devel
 python3-pip
+rubber
+ruby2.5
+ruby2.5-devel
+ruby2.5-rubygem-bundler
+simplescreenrecorder
+texlive-ly1
+texlive-mdframed
+texlive-xcharter
+valgrind
+wireshark
+youtube-dl
