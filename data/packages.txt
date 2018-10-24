@@ -16,6 +16,7 @@ libboost_filesystem1_68_0-devel
 libboost_headers1_68_0-devel
 libboost_system1_68_0-devel
 libcurl-devel
+myspell-pt_BR
 nmap
 octave
 opencv
