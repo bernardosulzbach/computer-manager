@@ -16,6 +16,8 @@ git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
 git config --global alias.co checkout
 git config --global alias.history "log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --decorate --date=short"
 
+git config --global commit.gpgsign true
+
 # Better Git colors
 git config --global color.ui true
 
