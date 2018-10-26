@@ -21,6 +21,8 @@ nmap
 octave
 opencv
 opencv-devel
+postgresql
+postgresql-server
 python3
 python3-devel
 python3-pip
