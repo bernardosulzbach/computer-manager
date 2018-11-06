@@ -5,6 +5,7 @@ cmake
 cppcheck
 crawl
 dropbox
+exiftool
 gcc
 gcc-c++
 gdb
