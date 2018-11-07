@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import tempfile
 import contextlib
 import requests
 import subprocess
@@ -7,6 +8,8 @@ import os
 import sys
 import string
 import shutil
+
+ENCODING = 'UTF-8'
 
 INDENTATION = '  '
 USER_HOME = os.path.expanduser('~')
@@ -16,7 +19,7 @@ DOWNLOAD_DIRECTORY = 'downloads'
 DOWNLOAD_CHUNK_SIZE = 256
 PIP_FILENAME = 'pip.txt'
 PACKAGES_FILE_NAME = 'packages.txt'
-
+BASH_HISTORY_FILE = os.path.join(USER_HOME, '.bash_history')
 CURRENT_JETBRAINS_VERSION = "2018.2.4"
 
 IDEA_LINK_FORMAT = "https://download.jetbrains.com/idea/ideaIU-{}.tar.gz"
@@ -161,6 +164,35 @@ def list_repositories(sentece: Sentence):
             print('{}{}'.format(INDENTATION, repository))
 
 
+def clean_bash_history_of_file(full_path):
+    """
+    Removes duplicates from the provided bash history file, keeping only the latest entry.
+
+    This would change (a.out, b.out a.out) to simply (b.out, a.out).
+
+    This operation might also affect whitespace.
+    """
+    with open(full_path) as bash_history_file_handler:
+        text = bash_history_file_handler.read()
+    lines = [line.strip() for line in text.split('\n') if line]
+    lines.reverse()
+    seen = set()
+    first_time_lines = []
+    for line in lines:
+        if line not in seen:
+            first_time_lines.append(line)
+            seen.add(line)
+    first_time_lines.reverse()
+    with tempfile.NamedTemporaryFile(delete=False) as temporary_file:
+        temporary_file.write(bytes('\n'.join(first_time_lines), ENCODING))
+        temporary_file.write(bytes('\n', ENCODING))
+    shutil.move(temporary_file.name, full_path)
+
+
+def clean_bash_history(sentence: Sentence):
+    clean_bash_history_of_file(BASH_HISTORY_FILE)
+
+
 def install_operating_system_packages():
     with open(get_path_to_housekeeper_data_file(PACKAGES_FILE_NAME)) as packages_file:
         packages = [line.strip() for line in packages_file.readlines()]
@@ -208,6 +240,7 @@ def list_packages(sentence: Sentence):
 
 def get_commands():
     return [Command('list commands', print_commands),
+            Command('clean bash history', clean_bash_history),
             Command('analyze repositories', list_repositories),
             Command('add package', add_package),
             Command('list packages', list_packages),
