@@ -8,3 +8,4 @@ autocmd FileType latex setlocal spell
 autocmd FileType markdown setlocal spell
 autocmd FileType md setlocal spell
 autocmd FileType tex setlocal spell
+autocmd FileType gitcommit setlocal spell
