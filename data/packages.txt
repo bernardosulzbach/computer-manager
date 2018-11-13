@@ -1,4 +1,5 @@
 ShellCheck
+ansible
 aspell-pt_BR
 clang
 cmake
