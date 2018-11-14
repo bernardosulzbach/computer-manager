@@ -34,8 +34,12 @@ ruby2.5
 ruby2.5-devel
 ruby2.5-rubygem-bundler
 simplescreenrecorder
+texlive-biber
+texlive-exercise
+texlive-isodate
 texlive-ly1
 texlive-mdframed
+texlive-wrapfig
 texlive-xcharter
 valgrind
 wireshark
