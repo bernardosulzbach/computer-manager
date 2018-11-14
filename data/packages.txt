@@ -21,6 +21,7 @@ libcurl-devel
 myspell-pt_BR
 nmap
 octave
+okular
 opencv
 opencv-devel
 postgresql
