@@ -212,6 +212,12 @@ def install_packages(sentence: Sentence):
     install_python_packages()
 
 
+def update_distribution(sentence: Sentence):
+    command = 'sudo zypper dup --auto-agree-with-licenses'
+    print(command)
+    subprocess.call(command.split())
+
+
 def get_package_list():
     with open(get_path_to_housekeeper_data_file(PACKAGES_FILE_NAME)) as packages_file:
         packages = [line.strip() for line in packages_file.readlines()]
@@ -245,6 +251,7 @@ def get_commands():
             Command('add package', add_package),
             Command('list packages', list_packages),
             Command('install packages', install_packages),
+            Command('update distribution', update_distribution),
             Command('download jetbrains products', download_jetbrains_products),
             Command('install jetbrains products', install_jetbrains_products)]
 
