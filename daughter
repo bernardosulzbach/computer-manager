@@ -80,9 +80,9 @@ def change_directory(new_directory):
 
 
 def assert_is_path_friendly(entry: str):
-    valid_path_characters = string.ascii_lowercase + string.ascii_uppercase + '-' + '.'
+    valid_path_characters = string.digits + string.ascii_letters + '-' + '.'
     for char in entry:
-        assert char in valid_path_characters
+        assert char in valid_path_characters, entry + ' is not a valid path.'
 
 
 def get_housekeeper_directory():
