@@ -171,6 +171,8 @@ def clean_bash_history_of_file(full_path):
     This would change (a.out, b.out a.out) to simply (b.out, a.out).
 
     This operation might also affect whitespace.
+
+    :return a tuple with before and after line count
     """
     with open(full_path) as bash_history_file_handler:
         text = bash_history_file_handler.read()
@@ -187,10 +189,16 @@ def clean_bash_history_of_file(full_path):
         temporary_file.write(bytes('\n'.join(first_time_lines), ENCODING))
         temporary_file.write(bytes('\n', ENCODING))
     shutil.move(temporary_file.name, full_path)
+    return len(lines), len(seen)
 
 
 def clean_bash_history(sentence: Sentence):
-    clean_bash_history_of_file(BASH_HISTORY_FILE)
+    before, after = clean_bash_history_of_file(BASH_HISTORY_FILE)
+    if before != after:
+        removed = before - after
+        print('Removed {} line{}.'.format(removed, 's' if removed > 1 else ''))
+    else:
+        print('Removed nothing.')
 
 
 def install_operating_system_packages():
