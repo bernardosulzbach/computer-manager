@@ -25,12 +25,13 @@ CURRENT_JETBRAINS_VERSION = "2018.2.4"
 IDEA_LINK_FORMAT = "https://download.jetbrains.com/idea/ideaIU-{}.tar.gz"
 CLION_LINK_FORMAT = "https://download.jetbrains.com/cpp/CLion-{}.tar.gz"
 PYCHARM_LINK_FORMAT = "https://download.jetbrains.com/python/pycharm-professional-{}.tar.gz"
+WEBSTORM_LINK_FORMAT = "https://download.jetbrains.com/webstorm/WebStorm-{}.tar.gz"
 DATAGRIP_LINK_FORMAT = "https://download.jetbrains.com/datagrip/datagrip-{}.tar.gz"
 
 SWAP_EXTENSION = '.swap'
 JETBRAINS_CHECKSUM_SUFFIX = '.sha256'
 JETBRAINS_INSTALL_DIRECTORY = 'jetbrains'
-JETBRAINS_FORMATS = [IDEA_LINK_FORMAT, CLION_LINK_FORMAT, PYCHARM_LINK_FORMAT, DATAGRIP_LINK_FORMAT]
+JETBRAINS_FORMATS = [IDEA_LINK_FORMAT, CLION_LINK_FORMAT, PYCHARM_LINK_FORMAT, WEBSTORM_LINK_FORMAT, DATAGRIP_LINK_FORMAT]
 JETBRAINS_LINKS = [link.format(CURRENT_JETBRAINS_VERSION) for link in JETBRAINS_FORMATS]
 
 
