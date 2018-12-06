@@ -14,13 +14,14 @@ ENCODING = 'UTF-8'
 INDENTATION = '  '
 USER_HOME = os.path.expanduser('~')
 USER_CODE_DIRECTORY = os.path.join(USER_HOME, 'code')
+COMPUTER_MANAGER_DIRECTORY = os.path.join(USER_CODE_DIRECTORY, 'computer-manager')
 DATA_DIRECTORY = 'data'
 DOWNLOAD_DIRECTORY = 'downloads'
 DOWNLOAD_CHUNK_SIZE = 256
 PIP_FILENAME = 'pip.txt'
 PACKAGES_FILE_NAME = 'packages.txt'
 BASH_HISTORY_FILE = os.path.join(USER_HOME, '.bash_history')
-CURRENT_JETBRAINS_VERSION = "2018.2.4"
+CURRENT_JETBRAINS_VERSION = "2018.3.1"
 
 IDEA_LINK_FORMAT = "https://download.jetbrains.com/idea/ideaIU-{}.tar.gz"
 CLION_LINK_FORMAT = "https://download.jetbrains.com/cpp/CLion-{}.tar.gz"
@@ -31,8 +32,11 @@ DATAGRIP_LINK_FORMAT = "https://download.jetbrains.com/datagrip/datagrip-{}.tar.
 SWAP_EXTENSION = '.swap'
 JETBRAINS_CHECKSUM_SUFFIX = '.sha256'
 JETBRAINS_INSTALL_DIRECTORY = 'jetbrains'
-JETBRAINS_FORMATS = [IDEA_LINK_FORMAT, CLION_LINK_FORMAT, PYCHARM_LINK_FORMAT, WEBSTORM_LINK_FORMAT, DATAGRIP_LINK_FORMAT]
-JETBRAINS_LINKS = [link.format(CURRENT_JETBRAINS_VERSION) for link in JETBRAINS_FORMATS]
+
+
+def get_jetbrains_links():
+    formats = [IDEA_LINK_FORMAT, CLION_LINK_FORMAT, PYCHARM_LINK_FORMAT, WEBSTORM_LINK_FORMAT, DATAGRIP_LINK_FORMAT]
+    return [link.format(CURRENT_JETBRAINS_VERSION) for link in formats]
 
 
 class Sentence:
@@ -102,11 +106,11 @@ def download(link, filename):
 
 
 def get_daughter_directory():
-    return os.path.dirname(sys.argv[0])
+    return COMPUTER_MANAGER_DIRECTORY
 
 
 def download_jetbrains_products(sentence: Sentence):
-    for file_link in JETBRAINS_LINKS:
+    for file_link in get_jetbrains_links():
         with change_directory(os.path.join(get_daughter_directory(), DOWNLOAD_DIRECTORY)):
             print('Downloading {}...'.format(os.path.basename(file_link)), end='', flush=True)
             file_checksum_link = file_link + JETBRAINS_CHECKSUM_SUFFIX
@@ -114,7 +118,8 @@ def download_jetbrains_products(sentence: Sentence):
             download(file_checksum_link, file_checksum_name)
             # Try the checksum, if it fails, download the file.
             try:
-                checksum_output = subprocess.check_output('sha256sum -c {}'.format(file_checksum_name).split())
+                command = 'sha256sum -c {}'.format(file_checksum_name).split()
+                checksum_output = subprocess.check_output(command, stderr=subprocess.DEVNULL)
                 if checksum_output.decode('utf-8').strip().endswith('OK'):
                     print(' already downloaded.')
                     continue
@@ -127,11 +132,11 @@ def download_jetbrains_products(sentence: Sentence):
 
 def install_jetbrains_products(sentence: Sentence):
     download_jetbrains_products(sentence)
-    for file_link in JETBRAINS_LINKS:
+    for file_link in get_jetbrains_links():
         file_name = os.path.basename(file_link)
         with change_directory(os.path.join(get_daughter_directory(), JETBRAINS_INSTALL_DIRECTORY)):
-            subprocess.call('tar --extract --file {}'.format(
-                os.path.join(get_daughter_directory(), DOWNLOAD_DIRECTORY, file_name)).split())
+            tar_file = os.path.join(get_daughter_directory(), DOWNLOAD_DIRECTORY, file_name)
+            subprocess.call('tar --extract --file {}'.format(tar_file).split())
             print('Extracted {}.'.format(file_name))
 
 
@@ -225,6 +230,9 @@ def update_distribution(sentence: Sentence):
     command = 'sudo zypper dup --auto-agree-with-licenses'
     print(command)
     subprocess.call(command.split())
+    command = 'sudo zypper remove --no-confirm PackageKit'
+    print(command)
+    subprocess.call(command.split())
 
 
 def get_package_list():
@@ -280,7 +288,3 @@ def main():
             command.answer(request)
             return
     print('Not a valid command.')
-
-
-if __name__ == '__main__':
-    main()

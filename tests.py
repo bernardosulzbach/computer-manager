@@ -3,7 +3,7 @@
 import unittest
 import tempfile
 
-import daughter
+import core
 
 
 class TestDaughter(unittest.TestCase):
@@ -14,11 +14,11 @@ class TestDaughter(unittest.TestCase):
             joined_source = '\n'.join(source) + '\n'
             output = ['a', 'b', 'c']
             joined_output = '\n'.join(output) + '\n'
-            temporary.write(bytes(joined_source, daughter.ENCODING))
+            temporary.write(bytes(joined_source, core.ENCODING))
             temporary.flush()
             with open(temporary.name, 'r') as data:
                 self.assertEqual(joined_source, data.read())
-            daughter.clean_bash_history_of_file(temporary.name)
+            core.clean_bash_history_of_file(temporary.name)
             with open(temporary.name, 'r') as data:
                 self.assertEqual(joined_output, data.read())
 

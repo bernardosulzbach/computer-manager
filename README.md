@@ -1,5 +1,7 @@
-# Daughter
+# Computer manager
 
-Daughter is a workstation management personal assistant.
+Computer manager is a personal computer management tool.
 
-You can run `daughter list commands` to get a listing of what it can do now.
+You can run `list-commands` to get a listing of what it can do.
+
+It is developed under OpenSUSE Tumbleweed and for OpenSUSE Tumbleweed.

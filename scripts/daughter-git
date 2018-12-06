@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SCRIPTS_PATH="$HOME/code/daughter/scripts"
+SCRIPTS_PATH="$HOME/code/computer-manager/scripts"
 
 git config --global user.email "bernardo@bernardosulzbach.com"
 git config --global user.name "Bernardo Sulzbach"
