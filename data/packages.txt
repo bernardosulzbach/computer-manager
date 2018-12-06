@@ -1,6 +1,7 @@
 ShellCheck
 ansible
 aspell-pt_BR
+bat
 clang
 cmake
 cppcheck
