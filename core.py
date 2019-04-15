@@ -9,6 +9,8 @@ import sys
 import string
 import shutil
 
+FILENAME_WORD_SEPARATOR = '-'
+
 ENCODING = 'UTF-8'
 
 INDENTATION = '  '
@@ -215,6 +217,37 @@ def install_operating_system_packages():
     subprocess.call(command.split())
 
 
+def normalize_filename_character(character: str):
+    assert len(character) == 1
+    if character == ' ':
+        return FILENAME_WORD_SEPARATOR
+    elif character.isupper():
+        return character.lower()
+    return character
+
+
+def normalize_filename(filename: str):
+    normalized_characters = [normalize_filename_character(character) for character in filename]
+    result_without_redundancy = []
+    for character in normalized_characters:
+        if character == FILENAME_WORD_SEPARATOR:
+            if not result_without_redundancy or result_without_redundancy[-1] != FILENAME_WORD_SEPARATOR:
+                result_without_redundancy.append(character)
+        else:
+            result_without_redundancy.append(character)
+    return ''.join(result_without_redundancy)
+
+
+def normalize_filenames(sentence: Sentence):
+    if sentence.words:
+        print('This command does not expect any arguments.')
+        return
+    for filename in os.listdir(os.curdir):
+        normalized_filename = normalize_filename(filename)
+        if os.path.isfile(filename) and not os.path.exists(normalized_filename):
+            shutil.move(filename, normalized_filename)
+
+
 def install_python_packages():
     command = 'pip install --user -r ' + get_path_to_housekeeper_data_file(PIP_FILENAME)
     print(command)
@@ -270,7 +303,8 @@ def get_commands():
             Command('install packages', install_packages),
             Command('update distribution', update_distribution),
             Command('download jetbrains products', download_jetbrains_products),
-            Command('install jetbrains products', install_jetbrains_products)]
+            Command('install jetbrains products', install_jetbrains_products),
+            Command('normalize filenames', normalize_filenames)]
 
 
 def print_commands(sentence: Sentence):
