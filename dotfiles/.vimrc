@@ -6,6 +6,8 @@ set expandtab
 set tabstop=2
 set shiftwidth=2
 
+set spell
+
 set nojoinspaces
 
 set viminfo='20,<1000
