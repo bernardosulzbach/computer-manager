@@ -322,3 +322,7 @@ def main():
             command.answer(request)
             return
     print('Not a valid command.')
+
+
+if __name__ == '__main__':
+    print('Use the manager script.')
