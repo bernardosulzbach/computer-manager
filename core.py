@@ -41,7 +41,18 @@ def get_jetbrains_links():
     return [link.format(CURRENT_JETBRAINS_VERSION) for link in formats]
 
 
+def validate_command_name(command: str):
+    valid_set = set(string.ascii_lowercase + '-' + ':')
+    for character in command:
+        if character not in valid_set:
+            raise ValueError("'{}' is not allowed in a command name.".format(character))
+
+
 class Sentence:
+    """
+    A sentence is a series of words.
+    """
+
     def __init__(self, words: [str]):
         self.words = words
 
@@ -59,8 +70,10 @@ class Sentence:
 
 
 class Command:
-    def __init__(self, wording: str, action):
-        self.invocation = Sentence(wording.split())
+    def __init__(self, invocation: str, action):
+        assert isinstance(invocation, str), 'Invocation should be a string.'
+        validate_command_name(invocation)
+        self.invocation = Sentence([invocation])
         self.action = action
 
     def matches(self, request: Sentence) -> bool:
@@ -295,16 +308,16 @@ def list_packages(sentence: Sentence):
 
 
 def get_commands():
-    return [Command('list commands', print_commands),
-            Command('clean bash history', clean_bash_history),
-            Command('analyze repositories', list_repositories),
-            Command('add package', add_package),
-            Command('list packages', list_packages),
-            Command('install packages', install_packages),
-            Command('update distribution', update_distribution),
-            Command('download jetbrains products', download_jetbrains_products),
-            Command('install jetbrains products', install_jetbrains_products),
-            Command('normalize filenames', normalize_filenames)]
+    return [Command('list-commands', print_commands),
+            Command('bash-history:clean', clean_bash_history),
+            Command('repositories:analyze', list_repositories),
+            Command('packages:add', add_package),
+            Command('packages:list', list_packages),
+            Command('packages:install', install_packages),
+            Command('distribution:update', update_distribution),
+            Command('jetbrains:download', download_jetbrains_products),
+            Command('jetbrains:install', install_jetbrains_products),
+            Command('directory:normalize-filenames', normalize_filenames)]
 
 
 def print_commands(sentence: Sentence):
@@ -314,7 +327,7 @@ def print_commands(sentence: Sentence):
 
 def main():
     if len(sys.argv) < 2:
-        print("You must ask me something.")
+        print('You must tell me what to do.')
         return
     request = Sentence(sys.argv[1:])
     for command in get_commands():
