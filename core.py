@@ -135,6 +135,10 @@ def install_jetbrains_products(sentence: Sentence):
     subprocess.run(['bash', get_path_to_housekeeper_include_file('jetbrains-from-snappy.sh')])
 
 
+def install_postman(sentence: Sentence):
+    subprocess.run(['bash', get_path_to_housekeeper_include_file('postman-from-snappy.sh')])
+
+
 def list_repositories(sentece: Sentence):
     dirty = []
     clean = []
@@ -297,6 +301,7 @@ def get_commands():
             Command('distribution:update', update_distribution),
             Command('snappy:install', install_snappy),
             Command('jetbrains:install', install_jetbrains_products),
+            Command('postman:install', install_postman),
             Command('directory:normalize-filenames', normalize_filenames)]
 
 
