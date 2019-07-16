@@ -18,6 +18,7 @@ USER_HOME = os.path.expanduser('~')
 USER_CODE_DIRECTORY = os.path.join(USER_HOME, 'code')
 COMPUTER_MANAGER_DIRECTORY = os.path.join(USER_CODE_DIRECTORY, 'computer-manager')
 DATA_DIRECTORY = 'data'
+INCLUDE_DIRECTORY = 'include'
 DOWNLOAD_DIRECTORY = 'downloads'
 DOWNLOAD_CHUNK_SIZE = 256
 PIP_FILENAME = 'pip.txt'
@@ -105,12 +106,16 @@ def assert_is_path_friendly(entry: str):
         assert char in valid_path_characters, entry + ' is not a valid path.'
 
 
-def get_housekeeper_directory():
-    return os.path.dirname(sys.argv[0])
+def get_computer_manager_directory():
+    return COMPUTER_MANAGER_DIRECTORY
 
 
 def get_path_to_housekeeper_data_file(filename):
-    return os.path.join(get_housekeeper_directory(), DATA_DIRECTORY, filename)
+    return os.path.join(get_computer_manager_directory(), DATA_DIRECTORY, filename)
+
+
+def get_path_to_housekeeper_include_file(filename):
+    return os.path.join(get_computer_manager_directory(), INCLUDE_DIRECTORY, filename)
 
 
 def download(link, filename):
@@ -120,39 +125,14 @@ def download(link, filename):
             fd.write(chunk)
 
 
-def get_daughter_directory():
-    return COMPUTER_MANAGER_DIRECTORY
-
-
-def download_jetbrains_products(sentence: Sentence):
-    for file_link in get_jetbrains_links():
-        with change_directory(os.path.join(get_daughter_directory(), DOWNLOAD_DIRECTORY)):
-            print('Downloading {}...'.format(os.path.basename(file_link)), end='', flush=True)
-            file_checksum_link = file_link + JETBRAINS_CHECKSUM_SUFFIX
-            file_checksum_name = os.path.basename(file_checksum_link)
-            download(file_checksum_link, file_checksum_name)
-            # Try the checksum, if it fails, download the file.
-            try:
-                command = 'sha256sum -c {}'.format(file_checksum_name).split()
-                checksum_output = subprocess.check_output(command, stderr=subprocess.DEVNULL)
-                if checksum_output.decode('utf-8').strip().endswith('OK'):
-                    print(' already downloaded.')
-                    continue
-            except subprocess.CalledProcessError:
-                pass
-            file_name = os.path.basename(file_link)
-            download(file_link, file_name)
-            print(' done.')
+def install_snappy(sentence: Sentence):
+    subprocess.run(['bash', get_path_to_housekeeper_include_file('snappy-1.sh')])
+    subprocess.run(['bash', get_path_to_housekeeper_include_file('snappy-2.sh')])
+    print('Please reboot now in order to get Snappy running.')
 
 
 def install_jetbrains_products(sentence: Sentence):
-    download_jetbrains_products(sentence)
-    for file_link in get_jetbrains_links():
-        file_name = os.path.basename(file_link)
-        with change_directory(os.path.join(get_daughter_directory(), JETBRAINS_INSTALL_DIRECTORY)):
-            tar_file = os.path.join(get_daughter_directory(), DOWNLOAD_DIRECTORY, file_name)
-            subprocess.call('tar --extract --file {}'.format(tar_file).split())
-            print('Extracted {}.'.format(file_name))
+    subprocess.run(['bash', get_path_to_housekeeper_include_file('jetbrains-from-snappy.sh')])
 
 
 def list_repositories(sentece: Sentence):
@@ -315,7 +295,7 @@ def get_commands():
             Command('packages:list', list_packages),
             Command('packages:install', install_packages),
             Command('distribution:update', update_distribution),
-            Command('jetbrains:download', download_jetbrains_products),
+            Command('snappy:install', install_snappy),
             Command('jetbrains:install', install_jetbrains_products),
             Command('directory:normalize-filenames', normalize_filenames)]
 
