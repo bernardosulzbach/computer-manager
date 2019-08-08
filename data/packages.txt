@@ -36,8 +36,10 @@ ruby2.5-devel
 ruby2.5-rubygem-bundler
 simplescreenrecorder
 texlive-biber
+texlive-csquotes
 texlive-exercise
 texlive-isodate
+texlive-latex-bin-bin
 texlive-ly1
 texlive-mdframed
 texlive-wrapfig
