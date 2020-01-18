@@ -139,7 +139,7 @@ def install_postman(sentence: Sentence):
     subprocess.run(['bash', get_path_to_housekeeper_include_file('postman-from-snappy.sh')])
 
 
-def list_repositories(sentece: Sentence):
+def list_repositories(sentence: Sentence):
     dirty = []
     clean = []
     for basename in sorted(os.listdir(path=USER_CODE_DIRECTORY)):
