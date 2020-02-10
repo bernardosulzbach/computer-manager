@@ -6,7 +6,7 @@ import tempfile
 import core
 
 
-class TestDaughter(unittest.TestCase):
+class Test(unittest.TestCase):
 
     def test_clean_bash_history(self):
         with tempfile.NamedTemporaryFile() as temporary:
