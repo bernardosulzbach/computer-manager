@@ -8,6 +8,9 @@ import os
 import sys
 import string
 import shutil
+import math
+
+import numpy
 
 FILENAME_WORD_SEPARATOR = '-'
 
@@ -197,6 +200,30 @@ def clean_bash_history_of_file(full_path):
     return len(lines), len(seen)
 
 
+def to_human_readable_size(size, decimal_places=3):
+    """
+    Converts a byte count to a human-readable file size.
+
+    Copied from https://stackoverflow.com/a/43690506/3271844.
+    """
+    for unit in ('B', 'KiB', 'MiB', 'GiB', 'TiB'):
+        if size < 1024.0:
+            break
+        size /= 1024.0
+    return f"{size:.{decimal_places}f} {unit}"
+
+
+def analyze_bash_history(sentence: Sentence):
+    print('Bash history is {}.'.format(to_human_readable_size(os.path.getsize(BASH_HISTORY_FILE))))
+    line_lengths = []
+    with open(BASH_HISTORY_FILE) as file_handle:
+        for line in file_handle.readlines():
+            line_lengths.append(len(line))
+    for fraction in (0.25, 0.5, 0.75):
+        amount = numpy.quantile(line_lengths, fraction)
+        print('{:.0%} of the lines are less than {} characters long.'.format(fraction, math.ceil(amount)))
+
+
 def clean_bash_history(sentence: Sentence):
     before, after = clean_bash_history_of_file(BASH_HISTORY_FILE)
     if before != after:
@@ -293,6 +320,7 @@ def list_packages(sentence: Sentence):
 
 def get_commands():
     return [Command('list-commands', print_commands),
+            Command('bash-history:analyze', analyze_bash_history),
             Command('bash-history:clean', clean_bash_history),
             Command('repositories:analyze', list_repositories),
             Command('packages:add', add_package),
