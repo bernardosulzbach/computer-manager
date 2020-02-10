@@ -9,6 +9,7 @@ import sys
 import string
 import shutil
 import math
+import datetime
 
 import numpy
 
@@ -28,6 +29,9 @@ PIP_FILENAME = 'pip.txt'
 PACKAGES_FILE_NAME = 'packages.txt'
 BASH_HISTORY_FILE = os.path.join(USER_HOME, '.bash_history')
 CURRENT_JETBRAINS_VERSION = "2018.3.1"
+MAXIMUM_RECENTLY_MODIFIED_REPOSITORIES = 10
+GIT_DATE_FORMAT = '%a %b %d %H:%M:%S %Y %z'
+GIT_LOG_DATE_LINE_PREFIX = 'Date:'
 
 IDEA_LINK_FORMAT = "https://download.jetbrains.com/idea/ideaIU-{}.tar.gz"
 CLION_LINK_FORMAT = "https://download.jetbrains.com/cpp/CLion-{}.tar.gz"
@@ -142,34 +146,79 @@ def install_postman(sentence: Sentence):
     subprocess.run(['bash', get_path_to_housekeeper_include_file('postman-from-snappy.sh')])
 
 
-def list_repositories(sentence: Sentence):
-    dirty = []
-    clean = []
-    for basename in sorted(os.listdir(path=USER_CODE_DIRECTORY)):
-        assert_is_path_friendly(basename)
-        full_path = os.path.join(USER_CODE_DIRECTORY, basename)
-        with change_directory(full_path):
-            if not os.path.exists(os.path.join(full_path, '.git')):
-                continue
+def has_git_repository(path: str) -> bool:
+    with change_directory(path):
+        if os.path.exists(os.path.join(path, '.git')):
+            return True
+    return False
+
+
+class Repository:
+    def __init__(self, path: str, basename: str):
+        assert has_git_repository(path)
+        self.path = path
+        self.basename = basename
+
+    def is_dirty(self) -> bool:
+        with change_directory(self.path):
             command = 'git status --short'
             try:
                 output = subprocess.check_output(command.split())
             except subprocess.CalledProcessError:
-                print('Failed when evaluating {}.'.format(basename))
-                return
+                raise Exception('Failed when evaluating if {} is dirty.'.format(self.basename))
         if output:
-            dirty.append(basename)
+            return True
+        return False
+
+    def get_last_commit_date(self):
+        with change_directory(self.path):
+            command = 'git log -1 --all --date-order'
+            try:
+                output = subprocess.check_output(command.split())
+            except subprocess.CalledProcessError:
+                raise Exception('Failed when evaluating the last commit date of {}.'.format(self.basename))
+            try:
+                lines = str(output, ENCODING).split('\n')
+                for line in lines:
+                    if line.startswith(GIT_LOG_DATE_LINE_PREFIX):
+                        date_string = line[len(GIT_LOG_DATE_LINE_PREFIX):].strip()
+                        return datetime.datetime.strptime(date_string, GIT_DATE_FORMAT)
+            except IndexError:
+                raise Exception('Failed to parse the last commit date of {}.'.format(self.basename))
+        raise Exception('Could not find the last commit date of {}.'.format(self.basename))
+
+
+def analyze_repositories(sentence: Sentence):
+    repositories = []
+    for basename in sorted(os.listdir(path=USER_CODE_DIRECTORY)):
+        assert_is_path_friendly(basename)
+        path = os.path.join(USER_CODE_DIRECTORY, basename)
+        if has_git_repository(path):
+            repositories.append(Repository(path, basename))
+    dirty = []
+    clean = []
+    for repository in repositories:
+        if repository.is_dirty():
+            dirty.append(repository)
         else:
-            clean.append(basename)
-    print('Found {} repositories.'.format(len(dirty) + len(clean)))
+            clean.append(repository)
+    print('Found {} repositories.'.format(len(repositories)))
+    most_recently_modified = repositories.copy()
+    most_recently_modified.sort(key=lambda r: r.get_last_commit_date())
+    most_recently_modified.reverse()
+    while len(most_recently_modified) > MAXIMUM_RECENTLY_MODIFIED_REPOSITORIES:
+        most_recently_modified.pop()
+    print('The most recently committed repositories:')
+    for repository in most_recently_modified:
+        print('{}{}: {}'.format(INDENTATION, repository.basename, repository.get_last_commit_date()))
     if dirty:
         print('Dirty:')
         for repository in dirty:
-            print('{}{}'.format(INDENTATION, repository))
+            print('{}{}'.format(INDENTATION, repository.basename))
     if clean:
         print('Clean:')
         for repository in clean:
-            print('{}{}'.format(INDENTATION, repository))
+            print('{}{}'.format(INDENTATION, repository.basename))
 
 
 def clean_bash_history_of_file(full_path):
@@ -322,7 +371,7 @@ def get_commands():
     return [Command('list-commands', print_commands),
             Command('bash-history:analyze', analyze_bash_history),
             Command('bash-history:clean', clean_bash_history),
-            Command('repositories:analyze', list_repositories),
+            Command('repositories:analyze', analyze_repositories),
             Command('packages:add', add_package),
             Command('packages:list', list_packages),
             Command('packages:install', install_packages),
