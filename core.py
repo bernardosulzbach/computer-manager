@@ -13,6 +13,8 @@ import datetime
 
 import numpy
 
+MINIMUM_PYTHON_VERSION = (3, 7)
+
 FILENAME_WORD_SEPARATOR = '-'
 
 ENCODING = 'UTF-8'
@@ -388,6 +390,8 @@ def print_commands(sentence: Sentence):
 
 
 def main():
+    if sys.version_info < MINIMUM_PYTHON_VERSION:
+        sys.exit("Python {}.{} or later is required.".format(MINIMUM_PYTHON_VERSION[0], MINIMUM_PYTHON_VERSION[1]))
     if len(sys.argv) < 2:
         print('You must tell me what to do.')
         return
