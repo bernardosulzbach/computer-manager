@@ -155,6 +155,10 @@ def has_git_repository(path: str) -> bool:
     return False
 
 
+class NoLastCommitDateException(Exception):
+    pass
+
+
 class Repository:
     def __init__(self, path: str, basename: str):
         assert has_git_repository(path)
@@ -187,7 +191,24 @@ class Repository:
                         return datetime.datetime.strptime(date_string, GIT_DATE_FORMAT)
             except IndexError:
                 raise Exception('Failed to parse the last commit date of {}.'.format(self.basename))
-        raise Exception('Could not find the last commit date of {}.'.format(self.basename))
+        raise NoLastCommitDateException('Could not find the last commit date of {}.'.format(self.basename))
+
+
+def print_most_recently_modified_repositories(repositories):
+    repositories_with_last_modified_date = []
+    for repository in repositories:
+        try:
+            last_commit_date = repository.get_last_commit_date()
+            repositories_with_last_modified_date.append((repository, last_commit_date))
+        except NoLastCommitDateException:
+            pass
+    repositories_with_last_modified_date.sort(key=lambda t: t[1])
+    repositories_with_last_modified_date.reverse()
+    while len(repositories_with_last_modified_date) > MAXIMUM_RECENTLY_MODIFIED_REPOSITORIES:
+        repositories_with_last_modified_date.pop()
+    print('The most recently committed repositories:')
+    for repository, last_commit_date in repositories_with_last_modified_date:
+        print('{}{}: {}'.format(INDENTATION, repository.basename, last_commit_date))
 
 
 def analyze_repositories(sentence: Sentence):
@@ -205,14 +226,7 @@ def analyze_repositories(sentence: Sentence):
         else:
             clean.append(repository)
     print('Found {} repositories.'.format(len(repositories)))
-    most_recently_modified = repositories.copy()
-    most_recently_modified.sort(key=lambda r: r.get_last_commit_date())
-    most_recently_modified.reverse()
-    while len(most_recently_modified) > MAXIMUM_RECENTLY_MODIFIED_REPOSITORIES:
-        most_recently_modified.pop()
-    print('The most recently committed repositories:')
-    for repository in most_recently_modified:
-        print('{}{}: {}'.format(INDENTATION, repository.basename, repository.get_last_commit_date()))
+    print_most_recently_modified_repositories(repositories)
     if dirty:
         print('Dirty:')
         for repository in dirty:
