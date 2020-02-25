@@ -15,9 +15,6 @@ git
 htop
 imagewriter
 keepassx
-libboost_filesystem1_68_0-devel
-libboost_headers1_68_0-devel
-libboost_system1_68_0-devel
 libcurl-devel
 myspell-pt_BR
 nmap
@@ -27,13 +24,11 @@ opencv
 opencv-devel
 postgresql
 postgresql-server
+powerline
 python3
 python3-devel
 python3-pip
 rubber
-ruby2.5
-ruby2.5-devel
-ruby2.5-rubygem-bundler
 simplescreenrecorder
 texlive-biber
 texlive-csquotes
