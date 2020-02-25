@@ -13,10 +13,18 @@ PATH="$PATH:$HOME/code/computer-manager/maven/bin"
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
+# Add powerline.
+powerline-daemon -q
+POWERLINE_BASH_CONTINUATION=1
+POWERLINE_BASH_SELECT=1
+. /usr/share/powerline/bash/powerline.sh
+
 # Define my aliases and functions.
 make-and-enter() {
     mkdir "$1" && cd "$1"
 }
+
+alias computer-manager='python3 ~/code/computer-manager/manager.py'
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/bernardo/google-cloud-sdk/path.bash.inc' ]; then . '/home/bernardo/google-cloud-sdk/path.bash.inc'; fi
