@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 export EDITOR=/usr/bin/vim
 
 export HISTSIZE=-1
@@ -22,6 +24,14 @@ POWERLINE_BASH_SELECT=1
 # Define my aliases and functions.
 make-and-enter() {
     mkdir "$1" && cd "$1"
+}
+
+copy-to-clipboard() {
+    cat "$1" | xclip -sel clipboard
+}
+
+open-watchlist-pages() {
+    cd ~/code/wikipedia-scripts && python3 open-watchlist-pages.py "$1" && cd "$OLDPWD"
 }
 
 alias computer-manager='python3 ~/code/computer-manager/manager.py'
