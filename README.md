@@ -5,3 +5,7 @@
 Computer manager is a personal computer management tool developed under OpenSUSE Tumbleweed and for OpenSUSE Tumbleweed.
 
 You can run `list commands` to get a listing of what it can do.
+
+## Contributing
+
+The Bash files should be formatted using [shfmt](https://github.com/mvdan/sh).
