@@ -22,6 +22,14 @@ POWERLINE_BASH_SELECT=1
 . /usr/share/powerline/bash/powerline.sh
 
 # Define my aliases and functions.
+evaluate() {
+	if [[ $# -ne 1 ]]; then
+		echo "Evaluate expects a single argument."
+		return 1
+	fi
+	python3 -c "print($1)"
+}
+
 make-and-enter() {
 	mkdir "$1" && cd "$1"
 }
