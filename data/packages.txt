@@ -1,3 +1,4 @@
+R-base
 ShellCheck
 ansible
 aspell-pt_BR
