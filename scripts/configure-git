@@ -1,17 +1,23 @@
 #!/usr/bin/env bash
 
-SCRIPTS_PATH="$HOME/code/computer-manager/scripts"
+EXECUTABLES_PATH="$HOME/code/computer-manager/executables"
+mkdir -p "$EXECUTABLES_PATH"
 
 git config --global user.email "bernardo@bernardosulzbach.com"
 git config --global user.name "Bernardo Sulzbach"
 
 git config --global push.default current
 
-# Better Git pager
-curl https://raw.githubusercontent.com/so-fancy/diff-so-fancy/master/third_party/build_fatpack/diff-so-fancy -o "$SCRIPTS_PATH/diff-so-fancy"
-chmod +x "$SCRIPTS_PATH/diff-so-fancy"
+# Get Delta, a syntax-highlighter for git and diff output
+wget "https://github.com/dandavison/delta/releases/download/0.1.1/delta-0.1.1-x86_64-unknown-linux-musl.tar.gz"
+tar --extract --file "delta-0.1.1-x86_64-unknown-linux-musl.tar.gz"
+mv "delta-0.1.1-x86_64-unknown-linux-musl/delta" "$EXECUTABLES_PATH/delta"
+rm -rf "delta-0.1.1-x86_64-unknown-linux-musl"
+rm -rf "delta-0.1.1-x86_64-unknown-linux-musl.tar.gz"
+chmod +x "$EXECUTABLES_PATH/delta"
 
-git config --global core.pager "diff-so-fancy | less --tabs=4 -RFX"
+git config --global core.pager "$EXECUTABLES_PATH/delta --plus-color=\"#012800\" --minus-color=\"#340001\""
+git config --global interactive.diffFilter "$EXECUTABLES_PATH/delta --color-only"
 
 git config --global alias.co checkout
 git config --global alias.history "log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --decorate --date=short"

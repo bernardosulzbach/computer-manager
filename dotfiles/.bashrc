@@ -10,6 +10,7 @@ PATH="$PATH:$HOME/.cargo/bin"
 PATH="$PATH:$HOME/code/computer-manager"
 PATH="$PATH:$HOME/code/computer-manager"
 PATH="$PATH:$HOME/code/computer-manager/cloc"
+PATH="$PATH:$HOME/code/computer-manager/executables"
 PATH="$PATH:$HOME/code/computer-manager/scripts"
 PATH="$PATH:$HOME/code/computer-manager/maven/bin"
 

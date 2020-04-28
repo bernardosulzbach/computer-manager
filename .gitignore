@@ -9,4 +9,6 @@ cloc/
 downloads/
 jetbrains/
 
+executables/
+
 scripts/diff-so-fancy
