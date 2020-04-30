@@ -28,7 +28,7 @@ evaluate() {
 		echo "Evaluate expects a single argument."
 		return 1
 	fi
-	python3 -c "print($1)"
+	python3 -c "from math import *; print($1)"
 }
 
 make-and-enter() {
