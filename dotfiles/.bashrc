@@ -58,10 +58,10 @@ open-watchlist-pages() {
 alias computer-manager='python3 ~/code/computer-manager/manager.py'
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/bernardo/google-cloud-sdk/path.bash.inc' ]; then . '/home/bernardo/google-cloud-sdk/path.bash.inc'; fi
+if [[ -f '/home/bernardo/google-cloud-sdk/path.bash.inc' ]]; then . '/home/bernardo/google-cloud-sdk/path.bash.inc'; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/home/bernardo/google-cloud-sdk/completion.bash.inc' ]; then . '/home/bernardo/google-cloud-sdk/completion.bash.inc'; fi
+if [[ -f '/home/bernardo/google-cloud-sdk/completion.bash.inc' ]]; then . '/home/bernardo/google-cloud-sdk/completion.bash.inc'; fi
 
 # Add .NET Core SDK tools
 export PATH="$PATH:/home/bernardo/.dotnet/tools"
