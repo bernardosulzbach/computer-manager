@@ -9,6 +9,7 @@ import string
 import subprocess
 import sys
 import tempfile
+from typing import *
 
 import numpy
 import requests
@@ -63,7 +64,7 @@ class Sentence:
     A sentence is a series of words.
     """
 
-    def __init__(self, words: [str]):
+    def __init__(self, words: List[str]):
         self.words = words
 
     def starts_with(self, sentence):
@@ -316,9 +317,9 @@ def normalize_filename_character(character: str):
     return character
 
 
-def normalize_filename(filename: str):
+def normalize_filename(filename: str) -> str:
     normalized_characters = [normalize_filename_character(character) for character in filename]
-    result_without_redundancy = []
+    result_without_redundancy: List[str] = []
     for character in normalized_characters:
         if character == FILENAME_WORD_SEPARATOR:
             if not result_without_redundancy or result_without_redundancy[-1] != FILENAME_WORD_SEPARATOR:
@@ -364,7 +365,7 @@ def get_package_list():
     return packages
 
 
-def set_package_list(package_list: [str]):
+def set_package_list(package_list: List[str]):
     packages_swap_file_name = PACKAGES_FILE_NAME + SWAP_EXTENSION
     packages_swap_file_path = get_path_to_housekeeper_data_file(packages_swap_file_name)
     with open(packages_swap_file_path, 'w') as packages_file:
