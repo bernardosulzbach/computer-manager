@@ -1,2 +1,3 @@
+mypy
 numpy
 requests
