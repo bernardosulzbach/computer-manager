@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 
-import tempfile
 import contextlib
-import requests
-import subprocess
-import os
-import sys
-import string
-import shutil
-import math
 import datetime
+import math
+import os
+import shutil
+import string
+import subprocess
+import sys
+import tempfile
 
 import numpy
+import requests
 
 MINIMUM_PYTHON_VERSION = (3, 7)
 
@@ -218,6 +218,7 @@ def analyze_repositories(sentence: Sentence):
         path = os.path.join(USER_CODE_DIRECTORY, basename)
         if has_git_repository(path):
             repositories.append(Repository(path, basename))
+    repositories.sort(key=lambda r: str.casefold(r.basename))
     dirty = []
     clean = []
     for repository in repositories:
