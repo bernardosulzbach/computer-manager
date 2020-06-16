@@ -100,7 +100,6 @@ class Command:
 @contextlib.contextmanager
 def change_directory(new_directory):
     previous_directory = os.getcwd()
-    new_directory = new_directory
     if not os.path.exists(new_directory):
         os.mkdir(new_directory)
     os.chdir(new_directory)
