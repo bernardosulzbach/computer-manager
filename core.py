@@ -136,17 +136,17 @@ def download(link, filename):
 
 
 def install_snappy(sentence: Sentence):
-    subprocess.run(['bash', get_path_to_housekeeper_include_file('snappy-1.sh')])
-    subprocess.run(['bash', get_path_to_housekeeper_include_file('snappy-2.sh')])
+    subprocess.check_call(['bash', get_path_to_housekeeper_include_file('snappy-1.sh')])
+    subprocess.check_call(['bash', get_path_to_housekeeper_include_file('snappy-2.sh')])
     print('Please reboot now in order to get Snappy running.')
 
 
 def install_jetbrains_products(sentence: Sentence):
-    subprocess.run(['bash', get_path_to_housekeeper_include_file('jetbrains-from-snappy.sh')])
+    subprocess.check_call(['bash', get_path_to_housekeeper_include_file('jetbrains-from-snappy.sh')])
 
 
 def install_postman(sentence: Sentence):
-    subprocess.run(['bash', get_path_to_housekeeper_include_file('postman-from-snappy.sh')])
+    subprocess.check_call(['bash', get_path_to_housekeeper_include_file('postman-from-snappy.sh')])
 
 
 def has_git_repository(path: str) -> bool:
