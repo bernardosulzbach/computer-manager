@@ -9,7 +9,7 @@ import string
 import subprocess
 import sys
 import tempfile
-from typing import *
+from typing import List
 
 import numpy
 import requests
