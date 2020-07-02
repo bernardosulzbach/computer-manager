@@ -279,8 +279,21 @@ def to_human_readable_size(size, decimal_places=3):
     return f"{size:.{decimal_places}f} {unit}"
 
 
+def count_lines(path: str) -> int:
+    with open(path) as handle:
+        return len(handle.readlines())
+
+
+def pluralize_if_required(count: int, singular: str, plural: str) -> str:
+    if count == 1:
+        return str(count) + " " + singular
+    return f'{count:,} {plural}'
+
+
 def analyze_bash_history(sentence: Sentence):
-    print('Bash history is {}.'.format(to_human_readable_size(os.path.getsize(BASH_HISTORY_FILE))))
+    lines_string = pluralize_if_required(count_lines(BASH_HISTORY_FILE), 'line', 'lines')
+    size_string = to_human_readable_size(os.path.getsize(BASH_HISTORY_FILE))
+    print(f'Bash history is {lines_string} long and uses {size_string}.')
     line_lengths = []
     with open(BASH_HISTORY_FILE) as file_handle:
         for line in file_handle.readlines():
