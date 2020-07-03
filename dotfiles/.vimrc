@@ -30,7 +30,9 @@ set backspace=indent,eol,start "Backspace behaviour
 
 set nojoinspaces
 
-set viminfo='20,<1000
+"The ' option is used to specify how many files for which you save marks (a-z).
+"The < option controls how many lines are saved for each of the registers. By default, all the lines are saved.
+set viminfo='10
 
 autocmd FileType latex setlocal spell
 autocmd FileType markdown setlocal spell
