@@ -44,7 +44,7 @@ make-and-enter() {
 }
 
 copy-to-clipboard() {
-  cat "$1" | xclip -sel clipboard
+  xclip -sel clipboard < "$1"
 }
 
 copy-solution-to-clipboard() {
@@ -59,12 +59,20 @@ copy-solution-to-clipboard() {
   cat "$1" | sed -n "/class Solution/{p; :loop n; p; /^};$/q; b loop}" | xclip -sel clipboard
 }
 
+processes() {
+  ps -A -F -M
+}
+
 open-watchlist-pages() {
   cd ~/code/wikipedia-scripts && python3 open-watchlist-pages.py "$1" && cd "$OLDPWD"
 }
 
+function colored-cat() {
+  pygmentize -f terminal "$1"
+}
+
 function colored-less() {
-  pygmentize -f terminal "$1" | less -R
+  colored-cat "$@" | less -R
 }
 
 alias computer-manager='python3 ~/code/computer-manager/manager.py'
