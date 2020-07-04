@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+BUNDLE_PATH=~/.vim/bundle/
+
+# If ~/.vim/bundle exists, get rid of it.
+rm -rf $BUNDLE_PATH && mkdir $BUNDLE_PATH
+
+# Get sensible.vim by Tim Pope: Defaults everyone can agree on
+cd $BUNDLE_PATH && git clone https://github.com/tpope/vim-sensible && cd -
+
+# Get sleuth.vim by Tim Pope: Heuristically set buffer options
+cd $BUNDLE_PATH && git clone https://github.com/tpope/vim-sleuth && cd -
+
+# Get fugitive.vim by Tim Pope: A Git wrapper so awesome, it should be illegal
+cd $BUNDLE_PATH && git clone https://github.com/tpope/vim-fugitive && cd -

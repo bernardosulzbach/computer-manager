@@ -26,6 +26,8 @@ opencv-devel
 postgresql
 postgresql-server
 powerline
+powerline
+powerline-fonts
 python3
 python3-devel
 python3-pip
