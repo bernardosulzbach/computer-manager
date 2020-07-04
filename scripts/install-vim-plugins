@@ -5,11 +5,14 @@ BUNDLE_PATH=~/.vim/bundle/
 # If ~/.vim/bundle exists, get rid of it.
 rm -rf $BUNDLE_PATH && mkdir $BUNDLE_PATH
 
-# Get sensible.vim by Tim Pope: Defaults everyone can agree on
-cd $BUNDLE_PATH && git clone https://github.com/tpope/vim-sensible && cd -
+function clone-on-bundle() {
+  echo "Getting" "$2"
+  cd $BUNDLE_PATH && git clone "$1" && cd - || exit
+}
 
-# Get sleuth.vim by Tim Pope: Heuristically set buffer options
-cd $BUNDLE_PATH && git clone https://github.com/tpope/vim-sleuth && cd -
-
-# Get fugitive.vim by Tim Pope: A Git wrapper so awesome, it should be illegal
-cd $BUNDLE_PATH && git clone https://github.com/tpope/vim-fugitive && cd -
+clone-on-bundle "https://github.com/tpope/vim-sensible" "sensible.vim by Tim Pope: Defaults everyone can agree on."
+clone-on-bundle "https://github.com/tpope/vim-sleuth" "sleuth.vim by Tim Pope: Heuristically set buffer options."
+clone-on-bundle "https://github.com/tpope/vim-fugitive" "fugitive.vim by Tim Pope: A Git wrapper so awesome, it should be illegal."
+clone-on-bundle "https://github.com/tpope/vim-surround" "surround.vim by Tim Pope: quoting/parenthesizing made simple."
+clone-on-bundle "https://github.com/airblade/vim-gitgutter" "vim-gitgutter by Andy Stewart: A Vim plugin which shows a git diff in the sign column."
+clone-on-bundle "https://github.com/flazz/vim-colorschemes" "vim-colorschemes by Franco Lazzarino: one colorscheme pack to rule them all!"
