@@ -7,8 +7,9 @@ python:
 
 install:
   - pip install -r requirements.txt
+  - pip install black mypy
 
 script:
-  - python ./tests.py
+  - black --target-version py37 --check *.py
   - mypy --ignore-missing-imports *.py
-  - flake8 *.py
+  - python ./tests.py
