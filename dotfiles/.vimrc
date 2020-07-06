@@ -16,3 +16,6 @@ autocmd FileType markdown setlocal spell
 autocmd FileType md setlocal spell
 autocmd FileType tex setlocal spell
 autocmd FileType gitcommit setlocal spell
+
+"Set our color scheme
+colorscheme gruvbox
