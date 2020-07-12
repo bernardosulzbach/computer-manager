@@ -4,17 +4,22 @@ import contextlib
 import datetime
 import math
 import os
+import pathlib
 import shutil
 import string
 import subprocess
 import sys
+import logging
 import tempfile
 from typing import List
 
+import humanize
 import numpy
 import requests
 
-MINIMUM_PYTHON_VERSION = (3, 7)
+import logger_factory
+
+MINIMUM_PYTHON_VERSION = (3, 8)
 
 FILENAME_WORD_SEPARATOR = "-"
 
@@ -24,6 +29,7 @@ INDENTATION = "  "
 USER_HOME = os.path.expanduser("~")
 USER_CODE_DIRECTORY = os.path.join(USER_HOME, "code")
 COMPUTER_MANAGER_DIRECTORY = os.path.join(USER_CODE_DIRECTORY, "computer-manager")
+LOGS_DIRECTORY = pathlib.Path(os.path.join(COMPUTER_MANAGER_DIRECTORY, "logs"))
 DATA_DIRECTORY = "data"
 INCLUDE_DIRECTORY = "include"
 DOWNLOAD_DIRECTORY = "downloads"
@@ -35,6 +41,7 @@ CURRENT_JETBRAINS_VERSION = "2018.3.1"
 MAXIMUM_RECENTLY_MODIFIED_REPOSITORIES = 10
 GIT_DATE_FORMAT = "%a %b %d %H:%M:%S %Y %z"
 GIT_LOG_DATE_LINE_PREFIX = "Date:"
+GIT_LARGE_FILE_THRESHOLD = 128 * 1024
 
 IDEA_LINK_FORMAT = "https://download.jetbrains.com/idea/ideaIU-{}.tar.gz"
 CLION_LINK_FORMAT = "https://download.jetbrains.com/cpp/CLion-{}.tar.gz"
@@ -96,8 +103,8 @@ class Command:
     def matches(self, request: Sentence) -> bool:
         return request.starts_with(self.invocation)
 
-    def answer(self, request: Sentence):
-        self.action(request.remove_prefix(self.invocation))
+    def answer(self, request: Sentence, logger: logging.Logger):
+        self.action(request.remove_prefix(self.invocation), logger)
 
     def __str__(self) -> str:
         return str(self.invocation)
@@ -140,17 +147,17 @@ def download(link, filename):
             fd.write(chunk)
 
 
-def install_snappy(sentence: Sentence):
+def install_snappy(sentence: Sentence, logger: logging.Logger):
     subprocess.check_call(["bash", get_path_to_housekeeper_include_file("snappy-1.sh")])
     subprocess.check_call(["bash", get_path_to_housekeeper_include_file("snappy-2.sh")])
     print("Please reboot now in order to get Snappy running.")
 
 
-def install_jetbrains_products(sentence: Sentence):
+def install_jetbrains_products(sentence: Sentence, logger: logging.Logger):
     subprocess.check_call(["bash", get_path_to_housekeeper_include_file("jetbrains-from-snappy.sh")])
 
 
-def install_postman(sentence: Sentence):
+def install_postman(sentence: Sentence, logger: logging.Logger):
     subprocess.check_call(["bash", get_path_to_housekeeper_include_file("postman-from-snappy.sh")])
 
 
@@ -217,7 +224,30 @@ def print_most_recently_modified_repositories(repositories):
         print("{}{}: {}".format(INDENTATION, repository.basename, last_commit_date))
 
 
-def analyze_repositories(sentence: Sentence):
+def list_large_files_in_repository(sentence: Sentence, logger: logging.Logger):
+    if len(sentence.words) != 1:
+        print("You must specify the path to the repository to be investigated.")
+        return
+    repository_path = pathlib.Path(sentence.words[0])
+    if not (repository_path / ".git").is_dir():
+        print("The specified directory is not a Git repository.")
+        return
+    with change_directory(repository_path):
+        objects_output = subprocess.check_output(["git", "rev-list", "--objects", "--all"], text=True)
+        cat_file_output = subprocess.check_output(["git", "cat-file", "--batch-check=%(objecttype) %(objectname) %(objectsize) %(rest)"], input=objects_output, text=True)
+    blobs = [line.split() for line in cat_file_output.split("\n") if line and line.split()[0] == "blob"]
+    blobs = sorted(filter(lambda line: int(line[2]) > GIT_LARGE_FILE_THRESHOLD, blobs), key=lambda line: int(line[2]), reverse=True)
+    if blobs:
+        count = len(blobs)
+        total_size = 0
+        for blob in blobs:
+            total_size += int(blob[2])
+        print(f"Found {count} blob{'s' if count != 1 else ''} larger than {GIT_LARGE_FILE_THRESHOLD} bytes, totaling {humanize.naturalsize(total_size,binary=True)}.")
+        for blob in blobs:
+            print(" ".join(blob))
+
+
+def analyze_repositories(sentence: Sentence, logger: logging.Logger):
     repositories = []
     for basename in sorted(os.listdir(path=USER_CODE_DIRECTORY)):
         assert_is_path_friendly(basename)
@@ -296,7 +326,7 @@ def pluralize_if_required(count: int, singular: str, plural: str) -> str:
     return f"{count:,} {plural}"
 
 
-def analyze_bash_history(sentence: Sentence):
+def analyze_bash_history(sentence: Sentence, logger: logging.Logger):
     lines_string = pluralize_if_required(count_lines(BASH_HISTORY_FILE), "line", "lines")
     size_string = to_human_readable_size(os.path.getsize(BASH_HISTORY_FILE))
     print(f"Bash history is {lines_string} long and uses {size_string}.")
@@ -309,7 +339,7 @@ def analyze_bash_history(sentence: Sentence):
         print("{:.0%} of the lines are less than {} characters long.".format(fraction, math.ceil(amount)))
 
 
-def clean_bash_history(sentence: Sentence):
+def clean_bash_history(sentence: Sentence, logger: logging.Logger):
     before, after = clean_bash_history_of_file(BASH_HISTORY_FILE)
     if before != after:
         removed = before - after
@@ -347,7 +377,7 @@ def normalize_filename(filename: str) -> str:
     return "".join(result_without_redundancy)
 
 
-def normalize_filenames(sentence: Sentence):
+def normalize_filenames(sentence: Sentence, logger: logging.Logger):
     if sentence.words:
         print("This command does not expect any arguments.")
         return
@@ -363,12 +393,12 @@ def install_python_packages():
     subprocess.call(command.split())
 
 
-def install_packages(sentence: Sentence):
+def install_packages(sentence: Sentence, logger: logging.Logger):
     install_operating_system_packages()
     install_python_packages()
 
 
-def update_distribution(sentence: Sentence):
+def update_distribution(sentence: Sentence, logger: logging.Logger):
     command = "sudo zypper dup --auto-agree-with-licenses"
     print(command)
     subprocess.call(command.split())
@@ -391,7 +421,7 @@ def set_package_list(package_list: List[str]):
     shutil.move(packages_swap_file_path, get_path_to_housekeeper_data_file(PACKAGES_FILE_NAME))
 
 
-def add_package(sentence: Sentence):
+def add_package(sentence: Sentence, logger: logging.Logger):
     packages = get_package_list()
     packages.append(str(sentence))
     packages = list(set(packages))
@@ -399,7 +429,7 @@ def add_package(sentence: Sentence):
     set_package_list(packages)
 
 
-def list_packages(sentence: Sentence):
+def list_packages(sentence: Sentence, logger: logging.Logger):
     print("\n".join(get_package_list()))
 
 
@@ -408,6 +438,7 @@ def get_commands():
         Command("list-commands", print_commands),
         Command("bash-history:analyze", analyze_bash_history),
         Command("bash-history:clean", clean_bash_history),
+        Command("repository:list-large-files", list_large_files_in_repository),
         Command("repositories:analyze", analyze_repositories),
         Command("packages:add", add_package),
         Command("packages:list", list_packages),
@@ -420,7 +451,7 @@ def get_commands():
     ]
 
 
-def print_commands(sentence: Sentence):
+def print_commands(sentence: Sentence, logger: logging.Logger):
     for command in get_commands():
         print(command)
 
@@ -431,10 +462,12 @@ def main():
     if len(sys.argv) < 2:
         print("You must tell me what to do.")
         return
+    logger = logger_factory.make_logger("computer-manager", LOGS_DIRECTORY)
+
     request = Sentence(sys.argv[1:])
     for command in get_commands():
         if command.matches(request):
-            command.answer(request)
+            command.answer(request, logger)
             return
     print("Not a valid command.")
 

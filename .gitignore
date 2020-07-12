@@ -1,5 +1,7 @@
 maven/
 
+logs/
+
 __pycache__/
 
 .idea/
