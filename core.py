@@ -252,8 +252,9 @@ def analyze_repositories(sentence: Sentence, logger: logging.Logger):
     for basename in sorted(os.listdir(path=USER_CODE_DIRECTORY)):
         assert_is_path_friendly(basename)
         path = os.path.join(USER_CODE_DIRECTORY, basename)
-        if has_git_repository(path):
-            repositories.append(Repository(path, basename))
+        if pathlib.Path(path).is_dir():
+            if has_git_repository(path):
+                repositories.append(Repository(path, basename))
     repositories.sort(key=lambda r: str.casefold(r.basename))
     dirty = []
     clean = []
