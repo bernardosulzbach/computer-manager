@@ -272,8 +272,8 @@ def analyze_repositories(sentence: Sentence, logger: logging.Logger):
             if has_git_repository(path):
                 repositories.append(Repository(path, basename))
     repositories.sort(key=lambda r: str.casefold(r.basename))
-    dirty_repositories = []
-    clean_repositories = []
+    dirty_repositories: List[Repository] = []
+    clean_repositories: List[Repository] = []
     for repository in repositories:
         if repository.is_dirty():
             dirty_repositories.append(repository)
@@ -444,7 +444,7 @@ def list_packages(sentence: Sentence, logger: logging.Logger):
     print("\n".join(get_package_list()))
 
 
-def get_commands():
+def get_commands() -> List[Command]:
     return [
         Command("list-commands", print_commands),
         Command("bash-history:analyze", analyze_bash_history),
