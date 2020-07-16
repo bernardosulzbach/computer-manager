@@ -189,7 +189,7 @@ class Repository:
             return True
         return False
 
-    def get_last_commit_date(self):
+    def get_last_commit_date(self) -> datetime.datetime:
         with change_directory(self.path):
             command = "git log -1 --all --date-order"
             try:
@@ -205,23 +205,6 @@ class Repository:
             except IndexError:
                 raise Exception("Failed to parse the last commit date of {}.".format(self.basename))
         raise NoLastCommitDateException("Could not find the last commit date of {}.".format(self.basename))
-
-
-def print_most_recently_modified_repositories(repositories):
-    repositories_with_last_modified_date = []
-    for repository in repositories:
-        try:
-            last_commit_date = repository.get_last_commit_date()
-            repositories_with_last_modified_date.append((repository, last_commit_date))
-        except NoLastCommitDateException:
-            pass
-    repositories_with_last_modified_date.sort(key=lambda t: t[1])
-    repositories_with_last_modified_date.reverse()
-    while len(repositories_with_last_modified_date) > MAXIMUM_RECENTLY_MODIFIED_REPOSITORIES:
-        repositories_with_last_modified_date.pop()
-    print("The most recently committed repositories:")
-    for repository, last_commit_date in repositories_with_last_modified_date:
-        print("{}{}: {}".format(INDENTATION, repository.basename, last_commit_date))
 
 
 def list_large_files_in_repository(sentence: Sentence, logger: logging.Logger):
@@ -247,8 +230,41 @@ def list_large_files_in_repository(sentence: Sentence, logger: logging.Logger):
             print(" ".join(blob))
 
 
+def print_most_recently_modified_repositories(repositories: List[Repository]):
+    repositories_with_last_modified_date = []
+    for repository in repositories:
+        try:
+            last_commit_date = repository.get_last_commit_date()
+            repositories_with_last_modified_date.append((repository, last_commit_date))
+        except NoLastCommitDateException:
+            pass
+    if not repositories_with_last_modified_date:
+        return
+    repositories_with_last_modified_date.sort(key=lambda t: t[1], reverse=True)
+    while len(repositories_with_last_modified_date) > MAXIMUM_RECENTLY_MODIFIED_REPOSITORIES:
+        repositories_with_last_modified_date.pop()
+    longest_repository_name_length = 0
+    for repository, _ in repositories_with_last_modified_date:
+        longest_repository_name_length = max(longest_repository_name_length, len(repository.basename))
+    print("Most recently modified:")
+    for repository, last_commit_date in repositories_with_last_modified_date:
+        print(f"{INDENTATION}{repository.basename:{longest_repository_name_length}} {last_commit_date}")
+
+
+def print_repositories(repositories: List[Repository], label: str):
+    if not repositories:
+        print(f"There are no {label} repositories.")
+        return
+    if len(repositories) == 1:
+        print(f"Found a {label} repository:")
+    else:
+        print(f"Found {len(repositories)} {label} repositories:")
+    for repository in repositories:
+        print("{}{}".format(INDENTATION, repository.basename))
+
+
 def analyze_repositories(sentence: Sentence, logger: logging.Logger):
-    repositories = []
+    repositories: List[Repository] = []
     for basename in sorted(os.listdir(path=USER_CODE_DIRECTORY)):
         assert_is_path_friendly(basename)
         path = os.path.join(USER_CODE_DIRECTORY, basename)
@@ -256,23 +272,17 @@ def analyze_repositories(sentence: Sentence, logger: logging.Logger):
             if has_git_repository(path):
                 repositories.append(Repository(path, basename))
     repositories.sort(key=lambda r: str.casefold(r.basename))
-    dirty = []
-    clean = []
+    dirty_repositories = []
+    clean_repositories = []
     for repository in repositories:
         if repository.is_dirty():
-            dirty.append(repository)
+            dirty_repositories.append(repository)
         else:
-            clean.append(repository)
-    print("Found {} repositories.".format(len(repositories)))
+            clean_repositories.append(repository)
+    print(f"Found {len(repositories)} repositories.")
     print_most_recently_modified_repositories(repositories)
-    if dirty:
-        print("Dirty:")
-        for repository in dirty:
-            print("{}{}".format(INDENTATION, repository.basename))
-    if clean:
-        print("Clean:")
-        for repository in clean:
-            print("{}{}".format(INDENTATION, repository.basename))
+    print_repositories(dirty_repositories, "dirty")
+    print_repositories(clean_repositories, "clean")
 
 
 def clean_bash_history_of_file(full_path):
