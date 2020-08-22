@@ -85,3 +85,6 @@ if [ -f '/home/bernardo/google-cloud-sdk/completion.bash.inc' ]; then . '/home/b
 
 # Add .NET Core SDK tools
 export PATH="$PATH:/home/bernardo/.dotnet/tools"
+
+# Added by the travis gem
+[ ! -s /home/bernardo/.travis/travis.sh ] || source /home/bernardo/.travis/travis.sh
