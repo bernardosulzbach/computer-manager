@@ -26,11 +26,12 @@ opencv-devel
 postgresql
 postgresql-server
 powerline
-powerline
 powerline-fonts
 python3
 python3-devel
 python3-pip
+ripgrep
+ripgrep-bash-completion
 rubber
 simplescreenrecorder
 texlive-biber
