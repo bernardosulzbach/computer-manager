@@ -40,7 +40,7 @@ path-hash() {
 }
 
 make-and-enter() {
-  mkdir "$1" && cd "$1" || exit
+  mkdir "$1" && cd "$1" || return 1
 }
 
 copy-to-clipboard() {
