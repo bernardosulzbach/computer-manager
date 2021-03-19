@@ -60,7 +60,12 @@ copy-solution-to-clipboard() {
 }
 
 processes() {
-  ps -A -F -M
+  ps -A -F -M |
+    if [[ $# -eq 0 ]]; then
+      cat
+    else
+      rg "$@"
+    fi
 }
 
 open-watchlist-pages() {
