@@ -19,6 +19,8 @@ chmod +x "$EXECUTABLES_PATH/delta"
 git config --global core.pager "$EXECUTABLES_PATH/delta --plus-color=\"#012800\" --minus-color=\"#340001\""
 git config --global interactive.diffFilter "$EXECUTABLES_PATH/delta --color-only"
 
+git config --global merge.ff only
+
 git config --global alias.br branch
 git config --global alias.co checkout
 git config --global alias.history "log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --decorate --date=short"
