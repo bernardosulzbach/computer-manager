@@ -28,7 +28,7 @@ evaluate() {
     echo "Evaluate expects a single argument."
     return 1
   fi
-  python3 -c "from math import *; import pint; unit = pint.UnitRegistry(); print($1)"
+  python3 -c "from math import *; import pint; ureg = pint.UnitRegistry(); print($1)"
 }
 
 path-hash() {
