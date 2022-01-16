@@ -5,7 +5,6 @@ bat
 clang
 cmake
 cppcheck
-crawl
 dropbox
 exiftool
 gcc
@@ -28,7 +27,6 @@ python3
 python3-pip
 ripgrep
 ripgrep-bash-completion
-rubber
 valgrind
 wireshark
 youtube-dl
