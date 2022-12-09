@@ -17,3 +17,4 @@ clone-on-bundle "https://github.com/tpope/vim-surround" "surround.vim by Tim Pop
 clone-on-bundle "https://github.com/airblade/vim-gitgutter" "vim-gitgutter by Andy Stewart: A Vim plugin which shows a git diff in the sign column."
 clone-on-bundle "https://github.com/flazz/vim-colorschemes" "vim-colorschemes by Franco Lazzarino: one colorscheme pack to rule them all!"
 clone-on-bundle "https://github.com/ledger/vim-ledger" "Vim plugin for Ledger"
+clone-on-bundle "https://github.com/elixir-editors/vim-elixir.git" "Elixir support for vim"
