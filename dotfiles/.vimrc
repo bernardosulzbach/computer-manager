@@ -10,6 +10,12 @@ imap <C-K> <c-o>:py3f /usr/share/clang/clang-format.py<cr>
 "Security
 set modelines=0
 
+"Spell checking
+set spell
+
+"Line numbers
+set number
+
 "Run Pathogen
 execute pathogen#infect()
 filetype plugin indent on
