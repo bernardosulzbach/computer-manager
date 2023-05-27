@@ -28,5 +28,6 @@ python3
 python3-pip
 ripgrep
 ripgrep-bash-completion
+tokei
 valgrind
 wireshark
