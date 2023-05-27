@@ -30,4 +30,3 @@ ripgrep
 ripgrep-bash-completion
 valgrind
 wireshark
-youtube-dl
