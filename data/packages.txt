@@ -11,6 +11,7 @@ gcc
 gcc-c++
 gdb
 git
+git-delta
 imagewriter
 keepassx
 libcurl-devel
