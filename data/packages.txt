@@ -1,6 +1,4 @@
-R-base
 ShellCheck
-ansible
 bat
 clang
 cmake
@@ -13,19 +11,6 @@ gdb
 git
 git-delta
 imagewriter
-keepassx
-libcurl-devel
-nmap
-octave
-okular
-opencv
-opencv-devel
-postgresql
-postgresql-server
-powerline
-powerline-fonts
-python3
-python3-pip
 ripgrep
 ripgrep-bash-completion
 tokei
