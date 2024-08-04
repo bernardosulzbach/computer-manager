@@ -5,6 +5,7 @@ cmake
 cppcheck
 dropbox
 exiftool
+fish
 gcc
 gcc-c++
 gdb
