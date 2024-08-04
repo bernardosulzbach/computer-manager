@@ -11,11 +11,12 @@ git config --global push.default current
 # Set up Delta, a syntax-highlighter for git and diff output
 git config --global core.pager "delta"
 git config --global interactive.diffFilter "delta --color-only"
-git config --global delta.navigate true
 git config --global delta.light false
-git config --global merge.conflictstyle "diff3"
+git config --global delta.navigate true
+
 git config --global diff.colorMoved "default"
 
+git config --global merge.conflictstyle "diff3"
 git config --global merge.ff only
 
 git config --global alias.br branch
